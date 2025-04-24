@@ -7,7 +7,7 @@ const Signup = ({ setCurrentPage }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { signUpNewUser } = UserAuth();
+  const { signUpNewUser, signInUser } = UserAuth();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -17,8 +17,13 @@ const Signup = ({ setCurrentPage }) => {
       const result = await signUpNewUser(email, password);
 
       if (result.success) {
-        // No need to navigate, the App component will render Dashboard
-        // when session becomes available
+        // After successful signup, try to sign in using the context function
+        const signInResult = await signInUser(email, password);
+
+        if (!signInResult.success) {
+          setError(signInResult.error);
+        }
+        // The session will be updated automatically by the auth state change listener
       } else {
         setError(result.error.message);
       }

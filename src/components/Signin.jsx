@@ -17,8 +17,8 @@ const Signin = ({ setCurrentPage }) => {
       const result = await signInUser(email, password);
 
       if (result.success) {
-        // No need to navigate, the App component will render Dashboard
-        // when session becomes available
+        // The session will be updated automatically by the auth state change listener
+        console.log('Sign in successful, session should update automatically');
       } else {
         setError(result.error);
         setTimeout(() => {
