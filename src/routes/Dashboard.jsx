@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { UserAuth } from "../context/AuthContext";
+import React, { useState } from 'react';
+import { UserAuth } from '../context/AuthContext';
 
-const Dashboard = () => {
+const Dashboard = ({ setCurrentPage }) => {
   const { session, signOut } = UserAuth();
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const handleSignOut = async (e) => {
     e.preventDefault();
 
     try {
       await signOut();
-      navigate("/");
+      setCurrentPage('signin');
     } catch (err) {
-      setError("An unexpected error occurred."); // Catch unexpected errors
+      setError('An unexpected error occurred.');
     }
   };
+
   console.log(session);
   return (
     <div>
@@ -29,6 +29,7 @@ const Dashboard = () => {
           Sign out
         </p>
       </div>
+      {error && <p className="text-red-600 text-center pt-4">{error}</p>}
     </div>
   );
 };

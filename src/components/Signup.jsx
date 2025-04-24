@@ -1,32 +1,31 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { UserAuth } from "../context/AuthContext";
+import React, { useState } from 'react';
+import { UserAuth } from '../context/AuthContext';
 
-const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Signup = ({ setCurrentPage }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { signUpNewUser } = UserAuth();
-  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const result = await signUpNewUser(email, password); // Call context function
+      const result = await signUpNewUser(email, password);
 
       if (result.success) {
-        navigate("/dashboard"); // Navigate to dashboard on success
+        // No need to navigate, the App component will render Dashboard
+        // when session becomes available
       } else {
-        setError(result.error.message); // Show error message on failure
+        setError(result.error.message);
       }
     } catch (err) {
-      setError("An unexpected error occurred."); // Catch unexpected errors
+      setError('An unexpected error occurred.');
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
@@ -35,7 +34,13 @@ const Signup = () => {
       <form onSubmit={handleSignUp} className="max-w-md m-auto pt-24">
         <h2 className="font-bold pb-2">Sign up today!</h2>
         <p>
-          Already have an account? <Link to="/">Sign in</Link>
+          Already have an account?{' '}
+          <span
+            onClick={() => setCurrentPage('signin')}
+            className="text-blue-500 cursor-pointer hover:underline"
+          >
+            Sign in
+          </span>
         </p>
         <div className="flex flex-col py-4">
           {/* <label htmlFor="Email">Email</label> */}

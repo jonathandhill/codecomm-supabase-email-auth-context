@@ -1,35 +1,34 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { UserAuth } from "../context/AuthContext";
+import React, { useState } from 'react';
+import { UserAuth } from '../context/AuthContext';
 
-const Signin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Signin = ({ setCurrentPage }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { signInUser } = UserAuth();
-  const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const { session, error } = await signInUser(email, password); // Use your signIn function
+    setLoading(true);
 
-    if (error) {
-      setError(error); // Set the error message if sign-in fails
+    try {
+      const result = await signInUser(email, password);
 
-      // Set a timeout to clear the error message after a specific duration (e.g., 3 seconds)
-      setTimeout(() => {
-        setError("");
-      }, 3000); // 3000 milliseconds = 3 seconds
-    } else {
-      // Redirect or perform any necessary actions after successful sign-in
-      navigate("/dashboard");
-    }
-
-    if (session) {
-      closeModal();
-      setError(""); // Reset the error when there's a session
+      if (result.success) {
+        // No need to navigate, the App component will render Dashboard
+        // when session becomes available
+      } else {
+        setError(result.error);
+        setTimeout(() => {
+          setError('');
+        }, 3000);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,7 +37,13 @@ const Signin = () => {
       <form onSubmit={handleSignIn} className="max-w-md m-auto pt-24">
         <h2 className="font-bold pb-2">Sign in</h2>
         <p>
-          Don't have an account yet? <Link to="/signup">Sign up</Link>
+          Don't have an account yet?{' '}
+          <span
+            onClick={() => setCurrentPage('signup')}
+            className="text-blue-500 cursor-pointer hover:underline"
+          >
+            Sign up
+          </span>
         </p>
         <div className="flex flex-col py-4">
           {/* <label htmlFor="Email">Email</label> */}
@@ -62,7 +67,9 @@ const Signin = () => {
             placeholder="Password"
           />
         </div>
-        <button className="w-full mt-4">Sign In</button>
+        <button type="submit" disabled={loading} className="w-full mt-4">
+          Sign In
+        </button>
         {error && <p className="text-red-600 text-center pt-4">{error}</p>}
       </form>
     </div>
